@@ -61,7 +61,7 @@ public class UsuarioController {
         if (userLogin == null || !new BCryptPasswordEncoder().matches(usuario.getSenha(), userLogin.getSenha())) {
             mv.addObject("mensagem", "Credenciais inválidas, tente novamente!");
         } else if (!userLogin.isAtivo()) {
-            mv.addObject("mensagem", "Erro: Credenciais inativas!");
+            mv.addObject("mensagem", "Erro: Suas credenciais estão inativas!");
         } else {
             session.setAttribute("usuarioLogado", userLogin);
             mv.setViewName("/index");
@@ -99,7 +99,6 @@ public class UsuarioController {
                 usuario.setPapeis(new ArrayList<>());
             }
             for(Long papelId : papelIds) {
-                @SuppressWarnings("null")//Verificar para que serve essa anotação
                 Papel papel = papelRepository.findById(papelId).orElse(null);
                 if (papel != null) {
                     usuario.getPapeis().add(papel);
@@ -129,10 +128,9 @@ public class UsuarioController {
         attributes.addFlashAttribute("mensagem", "Usuario salvo com sucesso!");
         return "redirect:/admin/novo";
     }
-    //Esse end-point ative e desativa os usuário com apenas um clique no botão.
+    //Esse end-point ativa e desativa os usuário com apenas um clique no botão.
     @PostMapping("/ativar-desativar/{id}")
     public String ativoDesativo(@PathVariable Long id) {
-        @SuppressWarnings("null")//<- Essa linha foi gerada automaticamente. Verificar o que significa.
         Usuario usuario = usuarioRepository.findById(id).orElse(null);
         if (usuario != null) {
             usuario.setAtivo(!usuario.isAtivo());
@@ -170,7 +168,6 @@ public class UsuarioController {
         if (papelIds != null) {
             usuario.setPapeis(new ArrayList<>());
             for (Long papelId : papelIds) {
-                @SuppressWarnings("null")
                 Papel papel = papelRepository.findById(papelId).orElse(null);
                 if (papel != null) {
                     usuario.getPapeis().add(papel);
@@ -203,11 +200,6 @@ public class UsuarioController {
         }
         model.addAttribute("usuariosEncontrados", usuariosEncontrados);
         return "/admin/usuarios-pesquisa";
-    }
-
-    @GetMapping("/logout")
-    public String logout(Model model) {
-        return "redirect:/admin/login";
     }
     
 }

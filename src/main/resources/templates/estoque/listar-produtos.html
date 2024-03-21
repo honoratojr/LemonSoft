@@ -14,7 +14,7 @@
 
 <body>
 
-    <div th:insert="fragments/adm-nav :: adm-nav"></div>
+    <div th:insert="~{fragments/adm-nav :: adm-nav}"></div>
 
     <div class="container">
         <div class="row">
@@ -39,7 +39,7 @@
                     </div>
 
                     <div class="col-sm-6 d-flex align-items-center justify-content-end">
-                        <a class="btn btn-primary float-end align-self-center" href="/produto/novo" role="button">+ Novo
+                        <a class="btn btn-primary float-end align-self-center" onclick="location.href='/produto/novo'" role="button">+ Novo
                             produto</a>
                     </div>
                 </div>
@@ -89,46 +89,41 @@
                             </td>
 
                             <td>
-                                <a type="button" class="btn btn-primary btn-sm"
-                                    th:href="@{/produto/detalhes/{id}(id=${produto.id})}">Visualizar</a>
+                                <button type="button" class="btn btn-primary btn-sm">Detalhes</button>
                             </td>
 
                         </tr>
                     </tbody>
                 </table>
 
-                <!-- Adicione os controles de paginação antes ou depois da tabela de produtos -->
                 <nav aria-label="Page navigation">
                     <ul class="pagination justify-content-center">
                         <li class="page-item" th:if="${currentPage != 0}">
-                            <a class="page-link" th:href="@{/produto/lista(page=0)}">Primeira</a>
+                            <a class="page-link" th:href="@{/lista(page=0)}">Primeira</a>
                         </li>
                         <li class="page-item" th:if="${currentPage != 0}">
-                            <a class="page-link" th:href="@{/produto/lista(page=${currentPage - 1})}">Anterior</a>
+                            <a class="page-link" th:href="@{/lista(page=${currentPage - 1})}">Anterior</a>
                         </li>
                         <li class="page-item" th:each="pageNumber : ${#numbers.sequence(0, totalPages - 1)}">
-                            <a class="page-link" th:href="@{/produto/lista(page=${pageNumber})}" th:text="${pageNumber + 1}"
+                            <a class="page-link" th:href="@{/lista(page=${pageNumber})}" th:text="${pageNumber + 1}"
                                 th:classappend="${pageNumber == currentPage} ? 'active' : ''"></a>
                         </li>
                         <li class="page-item" th:if="${currentPage != totalPages - 1}">
-                            <a class="page-link" th:href="@{/produto/lista(page=${currentPage + 1})}">Próxima</a>
+                            <a class="page-link" th:href="@{/lista(page=${currentPage + 1})}">Próxima</a>
                         </li>
                         <li class="page-item" th:if="${currentPage != totalPages - 1}">
-                            <a class="page-link" th:href="@{/produto/lista(page=${totalPages - 1})}">Última</a>
+                            <a class="page-link" th:href="@{/lista(page=${totalPages - 1})}">Última</a>
                         </li>
                     </ul>
                 </nav>
-
+                
                 <p th:if="${totalPages == 1}">
                     Página <span>1</span> de <span>1</span>
                 </p>
                 <p th:if="${totalPages > 1}">
                     Página <span th:text="${currentPage + 1}"></span> de <span th:text="${totalPages}"></span>
                 </p>
-
-
-                <!-- <p>Página <span th:text="${currentPage + 1}"></span> de <span th:text="${totalPages}"></span></p> -->
-
+                        
             </div>
         </div>
     </div>
