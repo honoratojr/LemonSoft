@@ -26,7 +26,6 @@ import lemonsoft.senac.model.Usuario;
 import lemonsoft.senac.repository.PapelRepository;
 import lemonsoft.senac.repository.UsuarioRepository;
 import lemonsoft.senac.services.UsuarioService;
-import lemonsoft.senac.util.PasswordUtil;
 import org.springframework.web.bind.annotation.PostMapping;
 
 
@@ -120,10 +119,6 @@ public class UsuarioController {
         }
         String hashSenha = new BCryptPasswordEncoder().encode(usuario.getSenha());
         usuario.setSenha(hashSenha);
-        //Cadastra o usuario como ativo
-        if (usuario.isAtivo() == false) {
-            usuario.setAtivo(true);
-        }
         //Salva o usuario
         usuarioRepository.save(usuario);
         attributes.addFlashAttribute("mensagem", "Usuario salvo com sucesso!");
@@ -182,12 +177,8 @@ public class UsuarioController {
             //model.addAttribute("listaPapeis", papelRepository.findAll());
             return "/admin/editar-usuario";
         }
-        String hashSenha = PasswordUtil.encoder(usuario.getSenha());
+        String hashSenha = new BCryptPasswordEncoder().encode(usuario.getSenha());
         usuario.setSenha(hashSenha);
-
-        if (usuario.isAtivo() == false) {
-            usuario.setAtivo(true);
-        }
         usuarioRepository.save(usuario);
         attributes.addFlashAttribute("mensagem", "Alterações salvas com sucesso!");
         return "redirect:/admin/lista";

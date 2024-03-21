@@ -91,11 +91,11 @@ public class ProdutoController {
 
     @GetMapping("/detalhes/{id}")
     public String detalhesProduto(@PathVariable("id") Long id, Model model) {
+        @SuppressWarnings("null")
         Produto produto = produtoRepository.findById(id).orElseThrow(() -> 
         new IllegalArgumentException("Produto não encontrado: " + id));
         model.addAttribute("produto" ,produto);
         return "/estoque/detalhes-produto";
     }
-    
-    
+        
 }

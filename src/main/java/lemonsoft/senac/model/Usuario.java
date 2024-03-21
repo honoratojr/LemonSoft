@@ -55,7 +55,7 @@ public class Usuario implements Serializable {
     @Transient
     private String confirmarSenha;
     
-    private boolean ativo;
+    private boolean ativo = Boolean.TRUE;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "usuario_papel", 
