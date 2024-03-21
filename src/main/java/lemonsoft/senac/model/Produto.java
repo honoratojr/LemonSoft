@@ -2,11 +2,15 @@ package lemonsoft.senac.model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotEmpty;
@@ -15,7 +19,9 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Setter
 @Data
 @Entity
 @NoArgsConstructor
@@ -52,8 +58,7 @@ public class Produto implements Serializable {
 
     public boolean status = Boolean.TRUE;
 
-    //@Lob
-    //@Column(length = 5242880)
-    //private byte[] imagem;
+    @OneToMany(mappedBy = "produto", cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    private List<ImagemProduto> imagens;
 
 }
