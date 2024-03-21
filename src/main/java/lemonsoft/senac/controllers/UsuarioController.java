@@ -57,8 +57,11 @@ public class UsuarioController {
             mv.setViewName("login-adm");
         }
         Usuario userLogin = usuarioRepository.findByEmail(usuario.getEmail());
+
         if (userLogin == null || !new BCryptPasswordEncoder().matches(usuario.getSenha(), userLogin.getSenha())) {
             mv.addObject("mensagem", "Credenciais inválidas, tente novamente!");
+        } else if (!userLogin.isAtivo()) {
+            mv.addObject("mensagem", "Erro: Credenciais inativas!");
         } else {
             session.setAttribute("usuarioLogado", userLogin);
             mv.setViewName("/index");
@@ -200,6 +203,11 @@ public class UsuarioController {
         }
         model.addAttribute("usuariosEncontrados", usuariosEncontrados);
         return "/admin/usuarios-pesquisa";
+    }
+
+    @GetMapping("/logout")
+    public String logout(Model model) {
+        return "redirect:/admin/login";
     }
     
 }

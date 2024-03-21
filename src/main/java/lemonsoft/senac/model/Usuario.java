@@ -43,6 +43,7 @@ public class Usuario implements Serializable {
     @Size(min = 11, message = "Deve conter 11 números")
     private String cpf;
 
+    
     @Email(message = "Email inválido")
     @NotEmpty(message = "O campo deve ser preenchido.")
     private String email;

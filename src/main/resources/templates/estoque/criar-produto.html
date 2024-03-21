@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Novo produto</title>
+
+    <link rel="stylesheet" th:href="@{/bootstrap-5.1.3-dist/css/bootstrap.min.css}">
+    <script th:src="@{/jquery-3.6.0-dist/jquery-3.6.0.min.js}"></script>
+    <script th:src="@{/bootstrap-5.1.3-dist/js/bootstrap.min.js}"></script>
+
+    <style>
+        .mensagem {
+            color: red;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div th:insert="fragments/adm-nav :: adm-nav"></div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col">
+
+                <h2>Cadastrar novo produto</h2>
+
+                <form class="container" th:action="@{/produto/salvar}" th:object="${produto}" method="post">
+
+                    <div class="form-row mx-auto">
+
+                        <div class="row g-3 mb-3">
+
+                            <div class="col-sm-5">
+                                <label class="form-label">Nome</label>
+                                <input type="text" class="form-control" th:field="*{nome}"
+                                    placeholder="Nome do produto">
+                                <div class="col">
+                                    <label class="mensagem" th:if="${#fields.hasErrors('nome')}"
+                                        th:errors="*{nome}"></label>
+                                </div>
+                            </div>
+
+                            <div class="col-sm mb-3">
+                                <label class="form-label">Preço:(R$)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">R$:</span>
+                                    <input type="text" class="form-control" th:field="*{preco}" placeholder="Preço">
+                                </div>
+                                <div class="col">
+                                    <span class="mensagem" th:if="${#fields.hasErrors('preco')}"
+                                        th:errors="*{preco}"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-3">
+                                <label class="form-label">Quantidade</label>
+                                <input type="number" class="form-control" th:field="*{quantidadeEstoque}"
+                                    placeholder="Quantidade">
+                                <div class="col-sm">
+                                    <span class="mensagem" th:if="${#fields.hasErrors('quantidadeEstoque')}"
+                                        th:errors="*{quantidadeEstoque}"></span>
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-8">
+                                <label class="form-label">Descrição</label>
+                                <input type="text" class="form-control" th:field="*{descricao}"
+                                    placeholder="Descrição max: 200">
+                                <div class="col-sm-5">
+                                    <span class="mensagem" th:if="${#fields.hasErrors('descricao')}"
+                                        th:errors="*{descricao}"></span>
+                                </div>
+                            </div>
+                            <div class="col-md  mb-3">
+                                <label class="form-label">Avaliação</label>
+                                <select class="form-select" aria-label="Default select example" th:field="*{avaliacao}">
+                                    <option value="0.0">Selecione uma avaliação</option>
+                                    <option value="0.5">0.5 estrelas</option>
+                                    <option value="1.0">1.0 estrelas</option>
+                                    <option value="1.5">1.5 estrelas</option>
+                                    <option value="2.0">2.0 estrelas</option>
+                                    <option value="2.5">2.5 estrelas</option>
+                                    <option value="3.0">3.0 estrelas</option>
+                                    <option value="3.5">3.5 estrelas</option>
+                                    <option value="4.0">4.0 estrelas</option>
+                                    <option value="4.5">4.5 estrelas</option>
+                                    <option value="5.0">5.0 estrelas</option>
+                                </select>
+                                <div class="col-sm-5">
+                                    <span class="mensagem" th:if="${#fields.hasErrors('avaliacao')}"
+                                        th:errors="*{avaliacao}"></span>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="form-floating">
+                            <textarea class="form-control" id="floatingTextarea2" th:field="*{descricaoDetalhada}"
+                                style="height: 100px"></textarea>
+                            <label for="floatingTextarea2">Descrição detalhada</label>
+                            <div class="col-sm-5">
+                                <span class="mensagem" th:if="${#fields.hasErrors('descricaoDetalhada')}"
+                                    th:errors="*{descricaoDetalhada}"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Escolher imagens</label>
+                        <input type="file" class="form-control" aria-label="file example">
+                        <div class="invalid-feedback">Selecione uma imagem.</div>
+                    </div>
+
+                    <div id="imagemPreview" class="mt-3">
+                        <th:block th:each="imagem : ${imagens}">
+                            <img th:src="${#strings.replace(imagem, ' ', '%20')}"
+                                class="img-thumbnail m-2 preview-image" />
+                        </th:block>
+                    </div>
+
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col">
+                    <a type="button" href="/produto/lista" class="btn btn-outline-primary">Cancelar</a>
+                    <input class="btn btn-primary" type="submit" value="Cadastrar" />
+                </div>
+            </div>
+
+            </form>
+
+        </div>
+    </div>
+    </div>
+
+</body>
+
+</html>

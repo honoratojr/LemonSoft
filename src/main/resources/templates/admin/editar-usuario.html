@@ -55,7 +55,7 @@
                     <div class="row mb-3">
                         <label class="col-sm-1 col-form-label">Email:</label>
                         <div class="col-sm-4">
-                            <input class="form-control" type="text" th:field="*{email}">
+                            <input class="form-control" th:readonly="${usuario.id != null}" type="text" th:field="*{email}">
                         </div>
                         <div class="col-sm-5"> 
                             <span class="mensagem" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
@@ -94,7 +94,7 @@
                             <span class="mensagem" th:if="${#fields.hasErrors('confirmarSenha')}" th:errors="*{confirmarSenha}"></span>
                         </div>
                     </div>
-                    
+                    <a type="button" href="/admin/lista" class="btn btn-outline-primary">Cancelar</a>
                     <input  class="btn btn-primary" type="submit" value="Alterar"/>
                 </form>
         

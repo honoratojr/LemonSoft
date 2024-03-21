@@ -22,7 +22,7 @@ public class WebSecurityConfig {
                 .headers(header -> header.cacheControl().disable().frameOptions().sameOrigin())//Essa linha libera o acesso ao banco H2
                 //.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/admin/lista").hasRole("1")
+                //.requestMatchers("/admin/lista").hasRole("1")
                 .anyRequest().permitAll()
                 )
                 .build();
