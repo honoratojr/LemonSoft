@@ -1,4 +1,4 @@
-package lemonsoft.senac.Details;
+package lemonsoft.senac.details;
 
 import java.util.Collection;
 import java.util.List;

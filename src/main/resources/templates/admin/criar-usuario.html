@@ -65,6 +65,7 @@
 						</div>
 					</div>
 
+					<!--
 					<div class="row mb-3">
 						<label class="col-sm-1 col-form-label">Grupo:</label>
 						<div class="col-sm-2">
@@ -79,8 +80,23 @@
 						<div class="col-sm-5">
 							<span class="mensagem" th:if="${papelIds}" th:text="${papelIds}"></span>
 						</div>
-					</div>
+					</div> -->
 
+					<div class="row mb-3">
+						<label class="col-sm-1 col-form-label">Grupo:</label>
+						<div class="col-sm-4">
+							<select class="form-select" name="papelId">
+								<option value="">Selecione um grupo</option>
+								<th:block th:each="pp : ${listaPapeis}">
+									<option th:value="${pp.id}" th:text="${pp.papel}"></option>
+								</th:block>
+							</select>
+						</div>
+						<div class="col-sm-5">
+							<span class="mensagem" th:if="${papelIds}" th:text="${papelIds}"></span>
+						</div>
+					</div>
+					
 
 					<div class="row mb-3">
 						<label class="col-sm-1 col-form-label">Senha:</label>

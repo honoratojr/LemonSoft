@@ -28,7 +28,11 @@
 
                 <h2>Cadastrar novo produto</h2>
 
-                <form class="container"  th:action="${produto.id != null} ? @{/produto/edita} : @{/produto/cadastro}" th:object="${produto}" method="post"  enctype="multipart/form-data">
+                <form class="container"
+                    th:action="${produto.id != null ? '/produto/editar/' + produto.id : '/produto/cadastro'}"
+                    th:object="${produto}" method="post" enctype="multipart/form-data">
+
+                    <input type="hidden" th:field="*{id}">
 
                     <div class="form-row mx-auto">
                         <div class="row g-3 mb-3">
@@ -36,13 +40,15 @@
                             <div th:if="${produto.id != null}">
                                 <input type="hidden" th:field="*{id}" readonly>
                             </div>
-                            
+
                             <!-- NOME -->
                             <div class="col-sm-5">
                                 <label class="form-label">Nome</label>
-                                <input type="text" class="form-control" th:field="*{nome}" placeholder="Nome do produto">
+                                <input type="text" class="form-control" th:field="*{nome}"
+                                    placeholder="Nome do produto">
                                 <div class="col">
-                                    <label class="mensagem" th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}"></label>
+                                    <label class="mensagem" th:if="${#fields.hasErrors('nome')}"
+                                        th:errors="*{nome}"></label>
                                 </div>
                             </div>
 
@@ -54,25 +60,32 @@
                                     <input type="text" class="form-control" th:field="*{preco}" placeholder="Preço">
                                 </div>
                                 <div class="col">
-                                    <span class="mensagem" th:if="${#fields.hasErrors('preco')}" th:errors="*{preco}"></span>
+                                    <span class="mensagem" th:if="${#fields.hasErrors('preco')}"
+                                        th:errors="*{preco}"></span>
                                 </div>
                             </div>
 
                             <!-- QUANTIDADE -->
                             <div class="col-sm-3">
                                 <label class="form-label">Quantidade</label>
-                                <input type="number" class="form-control" th:field="*{quantidadeEstoque}" placeholder="Quantidade">
+                                <input type="number" class="form-control" th:field="*{quantidadeEstoque}"
+                                    placeholder="Quantidade">
                                 <div class="col-sm">
-                                    <span class="mensagem" th:if="${#fields.hasErrors('quantidadeEstoque')}" th:errors="*{quantidadeEstoque}"></span>
+                                    <span class="mensagem" th:if="${#fields.hasErrors('quantidadeEstoque')}"
+                                        th:errors="*{quantidadeEstoque}"></span>
                                 </div>
                             </div>
+
+                            <h3>Descrição e avaliação</h3>
 
                             <!-- DESCRIÇÃO -->
                             <div class="col-md-8">
                                 <label class="form-label">Descrição</label>
-                                <input type="text" class="form-control" th:field="*{descricao}" placeholder="Descrição max: 200">
+                                <input type="text" class="form-control" th:field="*{descricao}"
+                                    placeholder="Descrição max: 200">
                                 <div class="col-sm-5">
-                                    <span class="mensagem" th:if="${#fields.hasErrors('descricao')}" th:errors="*{descricao}"></span>
+                                    <span class="mensagem" th:if="${#fields.hasErrors('descricao')}"
+                                        th:errors="*{descricao}"></span>
                                 </div>
                             </div>
 
@@ -93,7 +106,8 @@
                                     <option value="5.0">5.0 estrelas</option>
                                 </select>
                                 <div class="col-sm-5">
-                                    <span class="mensagem" th:if="${#fields.hasErrors('avaliacao')}" th:errors="*{avaliacao}"></span>
+                                    <span class="mensagem" th:if="${#fields.hasErrors('avaliacao')}"
+                                        th:errors="*{avaliacao}"></span>
                                 </div>
                             </div>
                         </div>
@@ -102,37 +116,52 @@
                     <!-- DESCRIÇÃO DETALHADA -->
                     <div class="row mb-3">
                         <div class="form-floating">
-                            <textarea class="form-control" id="floatingTextarea2" th:field="*{descricaoDetalhada}" style="height: 100px"></textarea>
+                            <textarea class="form-control" id="floatingTextarea2" th:field="*{descricaoDetalhada}"
+                                style="height: 100px"></textarea>
                             <label for="floatingTextarea2">Descrição detalhada</label>
                             <div class="col-sm-5">
-                                <span class="mensagem" th:if="${#fields.hasErrors('descricaoDetalhada')}" th:errors="*{descricaoDetalhada}"></span>
+                                <span class="mensagem" th:if="${#fields.hasErrors('descricaoDetalhada')}"
+                                    th:errors="*{descricaoDetalhada}"></span>
                             </div>
                         </div>
                     </div>
 
-                    <button type="button" class="btn btn-secondary" id="btnNovaImagem" >Incluir nova imagem</button>
+                    <h3>Incluir imagens </h3>
+
+                    <button type="button" class="btn btn-secondary" id="btnNovaImagem">Incluir nova imagem
+                        <i class="bi bi-filetype-jpg"></i>
+                        <img src="/logos/filetype-jpg.svg" alt="">
+                    </button>
 
                     <!-- INPUT DE IMAGENS -->
                     <div class="pt-4" id="inputImagem">
-                        
+
                         <fieldset th:each="imagem, iterStat   : *{imagens}">
                             <p th:text="${imagem.id}"></p>
-                            <img class="card-img-top" th:id="'selectedImage' + ${iterStat.index}" th:onclick="'document.getElementById(\'incluirImagem' + ${iterStat.index} + '\').click()'"
-                            th:src="'/img/produtos/' + ${imagem.nomeArquivo}" style="width: 200px; cursor: pointer;" />
-                            <input th:id="'incluirImagem' + ${iterStat.index}" type="file"
-                                th:name="'arquivo'" class="form-control"  th:attr="onchange=|displaySelectedImage(event, `selectedImage${iterStat.index}`)|"/>
+                            <img class="card-img-top" th:id="'selectedImage' + ${iterStat.index}"
+                                th:onclick="'document.getElementById(\'incluirImagem' + ${iterStat.index} + '\').click()'"
+                                th:src="'/img/produtos/' + ${imagem.nomeArquivo}"
+                                style="width: 200px; cursor: pointer;" /> <i class="bi bi-filetype-jpg"></i> <img
+                                src="/logos/filetype-jpg.svg" alt="">
+                            <input th:id="'incluirImagem' + ${iterStat.index}" type="file" th:name="'arquivo'"
+                                class="form-control"
+                                th:attr="onchange=|displaySelectedImage(event, `selectedImage${iterStat.index}`)|" />
                             <div>
                                 <label for="txtOrdenacao${iterStat.index}" class="form-label">Ordem: </label>
-                                <input type="number" class="form-control" th:name="${'imagens[' + iterStat.index + '].ordenacao'}"  th:value="${imagem.ordenacao}"/>
+                                <input type="number" class="form-control"
+                                    th:name="${'imagens[' + iterStat.index + '].ordenacao'}"
+                                    th:value="${imagem.ordenacao}" />
                             </div>
                             <div>
-                                <label for="principal${iterStat.index}"  class="form-label">Principal: </label>
-                                <input type="checkbox" class="form-control" th:name="${'imagens[' + iterStat.index + '].principal'}" th:value="${imagem.principal}"/>
+                                <label for="principal${iterStat.index}" class="form-label">Principal: </label>
+                                <input type="checkbox" class="form-control"
+                                    th:name="${'imagens[' + iterStat.index + '].principal'}"
+                                    th:value="${imagem.principal}" />
                             </div>
                         </fieldset>
 
                     </div>
-                    
+
                     <!-- BOTÕES CANC/CAD -->
                     <div class="row g-3 mb-3">
                         <div class="col">
@@ -140,7 +169,7 @@
                             <input class="btn btn-primary" type="submit" value="Cadastrar" />
                         </div>
                     </div>
-                </div>
+            </div>
             </form>
         </div>
     </div>

@@ -7,7 +7,6 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -32,8 +31,6 @@ import lemonsoft.senac.repository.ImagemProdutoRepository;
 import lemonsoft.senac.repository.ProdutoRepository;
 import org.springframework.web.bind.annotation.PostMapping;
 
-
-
 @Controller
 @RequestMapping("/produto")
 public class ProdutoController {
@@ -42,18 +39,19 @@ public class ProdutoController {
     ProdutoRepository produtoRepository;
 
     @Autowired
-    private ImagemProdutoRepository imgRepository;
-    
+    ImagemProdutoRepository imgRepository;
+
     @GetMapping("/lista")
     public ModelAndView listarProdutos(@RequestParam(defaultValue = "0") int page) {
-        Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "id"));
+        int pageSize = 10;
+        Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "id"));
 
         Page<Produto> produtosPage = this.produtoRepository.findAll(pageable);
         List<Produto> produtos = produtosPage.getContent();
 
-        int totalPages = produtos.isEmpty() || produtos.size() < 10 ? 1 : produtosPage.getTotalPages();
+        int totalPages = produtosPage.getTotalPages();
 
-        ModelAndView mv = new ModelAndView("/estoque/listar-produtos");
+        ModelAndView mv = new ModelAndView("estoque/listar-produtos");
         mv.addObject("produtos", produtos);
         mv.addObject("currentPage", page);
         mv.addObject("totalPages", totalPages);
@@ -66,12 +64,15 @@ public class ProdutoController {
         return "estoque/criar-produto";
     }
 
+    @SuppressWarnings("null")
+
     @PostMapping("/cadastro")
-    public String cadastroProduto(@RequestParam("arquivo") MultipartFile[] files, RedirectAttributes attributes, @Valid Produto produto, BindingResult result) {
-        
+    public String cadastrarProduto(@RequestParam("arquivo") MultipartFile[] files, RedirectAttributes attributes,
+            @Valid Produto produto, BindingResult result) {
         if (result.hasErrors()) {
             return "estoque/criar-produto";
         }
+        produtoRepository.save(produto);
 
         List<ImagemProduto> imagensEntities = new ArrayList<>();
 
@@ -81,7 +82,6 @@ public class ProdutoController {
             if (file.isEmpty()) {
                 continue; // Ignora arquivos vazios
             }
-
             String nomeOriginal = file.getOriginalFilename();
             String extensao = nomeOriginal.substring(nomeOriginal.lastIndexOf("."));
             String nomeArquivo = produto.getId() + "-" + (i + 1) + extensao;
@@ -89,7 +89,7 @@ public class ProdutoController {
             try {
                 String uploadDir = "src/main/resources/static/img/produtos/";
                 Path uploadPath = Paths.get(uploadDir);
-                if(!Files.exists(uploadPath)) {
+                if (!Files.exists(uploadPath)) {
                     Files.createDirectories(uploadPath);
                 }
 
@@ -106,68 +106,78 @@ public class ProdutoController {
                 e.printStackTrace();
             }
         }
-
         produto.setImagens(imagensEntities);
         produtoRepository.save(produto);
         attributes.addFlashAttribute("mensagem", "Novo produto adicionado com sucesso!");
         return "redirect:/produto/lista";
     }
-    
-    @PostMapping("produto/edita")
-    public String edita(@RequestParam("arquivo") MultipartFile[] files, @Valid Produto produto, BindingResult result) {
-        if (result.hasErrors()) {}
 
-        List<ImagemProduto> imagensEntities = produto.getImagens();
+    @GetMapping("/editar/{id}")
+    public String editarProdutoForm(@PathVariable Long id, Model model) {
+        Produto produto = produtoRepository.findById(id).orElse(null);
+        if (produto == null) {
+            return "redirect:/produto/lista";
+        }
+        model.addAttribute("produto", produto);
+        return "estoque/editar-produto";
+    }
 
-        for (int i = 0; i < files.length; i++) {
-            MultipartFile file = files[i];
+    @SuppressWarnings("null")
 
-            if (file.isEmpty()) {
-                continue; 
-            }
+    @PostMapping("/editar/{id}")
+    public String editarProduto(@RequestParam("arquivo") MultipartFile[] files, RedirectAttributes attributes,
+            @Valid Produto produto, BindingResult result, @PathVariable Long id) {
+        if (result.hasErrors()) {
+            return "estoque/editar-produto";
+        }
+        Produto produtoExistente = produtoRepository.findById(id).orElse(null);
+        if (produtoExistente == null) {
+            result.rejectValue("produtoNulo", "Erro: produto não foi encontrado.");
+            return "redirect:/produto/lista";
+        }
+        produtoRepository.save(produtoExistente);
 
-            try {
-                ImagemProduto imagemProduto = imgRepository .findByNomeArquivoContaining(produto.getId() + "-" + (i + 1));
-                String nomeOriginal = file.getOriginalFilename();
-                String extensao = nomeOriginal.substring(nomeOriginal.lastIndexOf("."));
-                String nomeArquivo = produto.getId() + "-" + (i + 1) + extensao;
-                String uploadDir = "src/main/resources/static/img/produtos/";
-                Path uploadPath = Paths.get(uploadDir);
-                Path destino = uploadPath.resolve(nomeArquivo);
+        List<ImagemProduto> imagensEntities = new ArrayList<>();
 
-                if (!Files.exists(uploadPath)) {
-                    Files.createDirectories(uploadPath);
+        try {
+            for (int i = 0; i < files.length; i++) {
+                MultipartFile file = files[i];
+
+                if (file.isEmpty()) {
+                    continue;
                 }
 
-                if (!file.getOriginalFilename().trim().equals("") && imagemProduto != null) {
+                ImagemProduto imagemProduto;
+                if (i < produtoExistente.getImagens().size()) {
 
-                    Files.write(destino, file.getBytes());
-
-                    // Update existing image entity
-                    imagemProduto.setNomeArquivo(nomeArquivo);
-                    imagemProduto.setOrdenacao(produto.getImagens().get(i).getOrdenacao());
-                    imagemProduto.setPrincipal(produto.getImagens().get(i).isPrincipal());
-                    imagemProduto.setProduto(produto);
-                    imgRepository.save(imagemProduto);
+                    imagemProduto = produtoExistente.getImagens().get(i);
                 } else {
 
-                    Files.copy(file.getInputStream(), destino, StandardCopyOption.REPLACE_EXISTING);
-
-                    ImagemProduto imgEntity = new ImagemProduto();
-                    imgEntity.setNomeArquivo(nomeArquivo);
-                    imgEntity.setOrdenacao(produto.getImagens().get(i).getOrdenacao());
-                    imgEntity.setPrincipal(produto.getImagens().get(i).isPrincipal());
-                    imgEntity.setProduto(produto);
-                    imagensEntities.add(imgEntity);
+                    imagemProduto = new ImagemProduto();
+                    imagemProduto.setProduto(produtoExistente);
+                    produtoExistente.getImagens().add(imagemProduto);
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
 
-        produto.setImagens(imagensEntities);
-        produtoRepository.save(produto);
-        return "redirect:/backoffice/produtos";
+                String nomeOriginal = file.getOriginalFilename();
+                String extensao = nomeOriginal.substring(nomeOriginal.lastIndexOf("."));
+                String nomeArquivo = produtoExistente.getId() + "-" + (i + 1) + extensao;
+                String uploadDir = "src/main/resources/static/img/produtos/";
+                Path destino = Paths.get(uploadDir).resolve(nomeArquivo);
+
+                Files.copy(file.getInputStream(), destino, StandardCopyOption.REPLACE_EXISTING);
+
+                imagemProduto.setNomeArquivo(nomeArquivo);
+
+                imagensEntities.add(imagemProduto);
+            }
+
+            produtoExistente.setImagens(imagensEntities);
+            produtoRepository.save(produto);
+            attributes.addFlashAttribute("mensagem", "Alterações salvas com sucesso!");
+            } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "redirect:/produto/lista";
     }
 
     @PostMapping("/ativar-desativar/{id}")
@@ -176,32 +186,28 @@ public class ProdutoController {
         if (produto != null) {
             produto.setStatus(!produto.isStatus());
             produtoRepository.save(produto);
-        } return "redirect:/produto/lista";
+        }
+        return "redirect:/produto/lista";
     }
 
     @GetMapping("/pesquisar-produto")
     public String pesquisarProduto(@RequestParam(required = false) String nome, Model model) {
         List<Produto> produtosEncontrados;
-        if(nome == null || nome.trim().isEmpty()){
+        if (nome == null || nome.trim().isEmpty()) {
             produtosEncontrados = produtoRepository.findAll();
         } else {
             produtosEncontrados = produtoRepository.findByNomeContainingIgnoreCase(nome);
         }
         model.addAttribute("produtosEncontrados", produtosEncontrados);
-        return "/admin/usuarios-pesquisa";
+        return "estoque/produtos-pesquisa";
     }
-<<<<<<< HEAD
 
     @GetMapping("/detalhes/{id}")
     public String detalhesProduto(@PathVariable("id") Long id, Model model) {
-        @SuppressWarnings("null")
-        Produto produto = produtoRepository.findById(id).orElseThrow(() -> 
-        new IllegalArgumentException("Produto não encontrado: " + id));
-        model.addAttribute("produto" ,produto);
+        Produto produto = produtoRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Produto não encontrado: " + id));
+        model.addAttribute("produto", produto);
         return "/estoque/detalhes-produto";
     }
-        
-=======
-    
->>>>>>> 3f462bb8ece4d7d74558c920b0f0cc98f0de46ef
+
 }

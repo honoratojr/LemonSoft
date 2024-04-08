@@ -1,11 +1,13 @@
 package lemonsoft.senac.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
 
@@ -17,6 +19,10 @@ public class ImagemProduto {
     private Integer id;
 
     private String nomeArquivo;
+
+    @Lob
+    @Column(columnDefinition="BLOB")
+    private byte[] arquivo;
 
     private int ordenacao;
 
@@ -64,6 +70,14 @@ public class ImagemProduto {
     
     public void setProduto(Produto produto) {
         this.produto = produto;
+    }
+
+    public byte[] getArquivo() {
+        return arquivo;
+    }
+
+    public void setArquivo(byte[] arquivo) {
+        this.arquivo = arquivo;
     }
 
     @Override

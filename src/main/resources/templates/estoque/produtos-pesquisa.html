@@ -27,18 +27,21 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-sm-6">
-                        <nav class="navbar navbar-light bg-white">
-                            <form class="form-inline d-flex" method="get" action="/produto/pesquisar-produto"
-                                th:object="${usuarios}">
-                                <input class="form-control mr-sm-2" type="search" name="nome" placeholder="Pesquisar"
-                                    aria-label="Pesquisar">
+                    <div class="col-sm-5">
+                        <form class="d-flex" method="get" action="/produto/pesquisar-produto" th:object="${produtos}">
+                            <div class="input-group mb-3">
+                                <a type="button" href="/produto/lista" class="input-group-text">
+                                    <i class="bi bi-arrow-left"></i>
+                                    <img src="/logos/arrow-left.svg" alt="">
+                                </a>
+                                <input class="form-control me-1 col-lg-8" type="search" name="nome"
+                                    placeholder="Pesquisar" aria-label="Pesquisar">
                                 <button class="btn btn-secondary my-2 my-sm-0 ml-auto" type="submit">Buscar</button>
-                            </form>
-                        </nav>
+                            </div>
+                        </form>
                     </div>
 
-                    <div class="col-sm-6 d-flex align-items-center justify-content-end">
+                    <div class="col-sm-7 d-flex align-items-center justify-content-end">
                         <a class="btn btn-primary float-end align-self-center" href="/produto/novo" role="button">+ Novo
                             produto</a>
                     </div>

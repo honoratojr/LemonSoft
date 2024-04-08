@@ -1,6 +1,7 @@
 package lemonsoft.senac.controllers;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -43,11 +44,10 @@ public class UsuarioController {
     UsuarioRepository usuarioRepository;
 
     @GetMapping("/login")
-    public String loginBackOffice(Model model) {
-        model.addAttribute("msg", "Seja bem-vindo ao BackOffice LemonSoft_.");
+    public String loginBackOffice() {
         return "login-adm";
     }
-    /*Revisar esse end-point e relizar correções. */
+    
     @PostMapping("/login")
     public ModelAndView login(@Valid Usuario usuario, BindingResult result, HttpSession session)  {
         ModelAndView mv = new ModelAndView();
@@ -60,7 +60,7 @@ public class UsuarioController {
         if (userLogin == null || !new BCryptPasswordEncoder().matches(usuario.getSenha(), userLogin.getSenha())) {
             mv.addObject("mensagem", "Credenciais inválidas, tente novamente!");
         } else if (!userLogin.isAtivo()) {
-            mv.addObject("mensagem", "Erro: Suas credenciais estão inativas!");
+            mv.addObject("mensagem", "Erro: Credenciais inativas!");
         } else {
             session.setAttribute("usuarioLogado", userLogin);
             mv.setViewName("/index");
@@ -81,27 +81,19 @@ public class UsuarioController {
         model.addAttribute("listaPapeis", papelRepository.findAll());
         return "/admin/criar-usuario";
     }
-    /*Identificado um bug ao atribuir os papéis ao usuário, quando ocorre um erro de dados no formulário os checkbox para atribuir um Papel somem.
-     * Deve ser analizado o caso e corrigido, de modo que ao ocorrer algum erro nos dados, o checkbox seja apresentado novamente no template.
-     * Video - 12 
-    */
+    
     @PostMapping("/salvar")
     public String salvarUsuario(@Valid Usuario usuario, BindingResult result, Model model, RedirectAttributes attributes, 
-    @RequestParam(name = "pps", required = false) List<Long> papelIds)/*Verificar essa linha, onde está passando os parâmetros de papeis. */{
+    @RequestParam(name = "papelId", required = false) Long papelId)/*Verificar essa linha, onde está passando os parâmetros de papeis. */{
         if (result.hasErrors()) {
             model.addAttribute("listaPapeis", papelRepository.findAll());
             model.addAttribute("papelIds", "Deve atribuir um grupo.");
             return "/admin/criar-usuario";
         }
-        if (papelIds != null) {
-            if (usuario.getPapeis() == null) {
-                usuario.setPapeis(new ArrayList<>());
-            }
-            for(Long papelId : papelIds) {
-                Papel papel = papelRepository.findById(papelId).orElse(null);
-                if (papel != null) {
-                    usuario.getPapeis().add(papel);
-                }
+        if (papelId != null) {
+            Papel papel = papelRepository.findById(papelId).orElse(null);
+            if (papel != null) {
+                usuario.setPapeis(Arrays.asList(papel));
             }
         }
         //Verific se existe E-mail cadastrado
@@ -121,9 +113,9 @@ public class UsuarioController {
         //Salva o usuario
         usuarioRepository.save(usuario);
         attributes.addFlashAttribute("mensagem", "Usuario salvo com sucesso!");
-        return "redirect:/admin/novo";
+        return "redirect:/admin/lista";
     }
-    //Esse end-point ativa e desativa os usuário com apenas um clique no botão.
+    //Esse end-point ative e desativa os usuário com apenas um clique no botão.
     @PostMapping("/ativar-desativar/{id}")
     public String ativoDesativo(@PathVariable Long id) {
         Usuario usuario = usuarioRepository.findById(id).orElse(null);
@@ -143,20 +135,19 @@ public class UsuarioController {
         List<Papel> todosPapeis = papelRepository.findAll();
         List<Long> papelIdsAssociados = usuario.getPapeis().stream().map(Papel::getId).collect(Collectors.toList());
 
+        model.addAttribute("papelIdsAssociados", papelIdsAssociados);
+
         model.addAttribute("usuario", usuario);
         model.addAttribute("listaPapeis", todosPapeis);
-        model.addAttribute("papelIdsAssociados", papelIdsAssociados);
         return "/admin/editar-usuario";
     }
-    /*Manter o status atual do usuario(Ativo/Inativo).
-    Efetuar tratamento para trazer os papeis de usuario, após erro de validação nos dados de usuario.
-     */
+
     /*Editar usuários */
     @PostMapping("/editar/{id}")
-    public String editarUsuario(@PathVariable("id") long id, @Valid Usuario usuario, BindingResult result, RedirectAttributes attributes, @RequestParam(name = "pps", required = false) List<Long> papelIds, Model model) {
+    public String editarUsuario(@PathVariable("id") long id, @Valid Usuario usuario, BindingResult result, RedirectAttributes attributes, @RequestParam(name = "papelIds", required = false) List<Long> papelIds, Model model) {
+        model.addAttribute("listaPapeis", papelRepository.findAll());
         if (result.hasErrors()) {
-            //model.addAttribute("listaPapeis", papelRepository.findAll());
-            //model.addAttribute("papelIdsAssociados", papelIds);
+            model.addAttribute("papelIdsAssociados", papelIds);
             usuario.setId(id);
             return "/admin/editar-usuario";
         }
@@ -169,9 +160,9 @@ public class UsuarioController {
                 }
             }
         }
+        usuarioRepository.save(usuario);
         if (!usuario.getSenha().equals(usuario.getConfirmarSenha())) {
             result.rejectValue("confirmarSenha", "error.usuario", "As senhas não coincidem!");
-            //model.addAttribute("listaPapeis", papelRepository.findAll());
             return "/admin/editar-usuario";
         }
         String hashSenha = new BCryptPasswordEncoder().encode(usuario.getSenha());
@@ -191,6 +182,11 @@ public class UsuarioController {
         }
         model.addAttribute("usuariosEncontrados", usuariosEncontrados);
         return "/admin/usuarios-pesquisa";
+    }
+
+    @GetMapping("/logout")
+    public String logout() {
+        return "redirect:/admin/login";
     }
     
 }

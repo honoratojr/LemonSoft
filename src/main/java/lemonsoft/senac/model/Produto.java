@@ -45,7 +45,7 @@ public class Produto implements Serializable {
     @NotNull(message = "Deve ser maior que 0.")
     private Integer quantidadeEstoque;
 
-    @DecimalMin(value = "0.5", message = "Atribua uma avalição.")
+    @DecimalMin(value = "0.5", message = "Atribua uma avaliação.")
     private double avaliacao;
     
     @Column(length = 200)
@@ -53,12 +53,12 @@ public class Produto implements Serializable {
     private String descricao;
 
     @Column(length = 2000)
-    @NotEmpty(message = "O campo deve ser preenchido.")
+    @NotEmpty(message = "Atribua uma descrição ao produto.")
     private String descricaoDetalhada;
 
     public boolean status = Boolean.TRUE;
 
     @OneToMany(mappedBy = "produto", cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     private List<ImagemProduto> imagens;
-
+    
 }

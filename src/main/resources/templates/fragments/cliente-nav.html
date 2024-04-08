@@ -2,41 +2,60 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <body>
-  <nav th:fragment="cliente-nav" class="navbar navbar-expand-lg navbar navbar-dark bg-dark">
-    <div class="container">
-      <a class="navbar-brand" href="#">LemonSoft_</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
+  <nav th:fragment="cliente-nav" class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container px-4 px-lg-5">
+      <a class="navbar-brand" href="/lemonSoft/home">
+        <img src="/logos/logolemon.svg" alt="LemonSoft" width="200" height="50">
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span
+          class="navbar-toggler-icon"></span></button>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Link</a>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Dropdown
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <li><a class="dropdown-item" href="#">Action</a></li>
-              <li><a class="dropdown-item" href="#">Another action</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" href="#">Something else here</a></li>
-            </ul>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
-          </li>
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+          
+          <!--  <li class="nav-item"><a class="nav-link active" aria-current="page" href="#!">Home</a></li>
+              <li class="nav-item"><a class="nav-link" href="#!">About</a></li>
+              <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Shop</a>
+                  <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                      <li><a class="dropdown-item" href="#!">All Products</a></li>
+                      <li><hr class="dropdown-divider" /></li>
+                      <li><a class="dropdown-item" href="#!">Popular Items</a></li>
+                      <li><a class="dropdown-item" href="#!">New Arrivals</a></li>
+                  </ul>
+              </li> -->
+
+          <form class="d-flex" method="get" action="/lemonSoft/resultado-pesquisa" th:object="${produtos}">
+            <div class="input-group input-group-lg">
+              <input type="search" class="form-control" aria-label="Sizing example input" name="nome"
+                aria-describedby="inputGroup-sizing-lg" placeholder="Pesquisar">
+              <button class="input-group-text" id="inputGroup-sizing-lg" type="submit">
+                <i class="bi bi-search"></i>
+                <img src="/logos/search.svg" alt="Buscar">
+              </button>
+            </div>
+          </form>
         </ul>
-        <form class="d-flex">
-          <input class="form-control me-2" type="search" placeholder="Procure um produto" aria-label="Search">
-          <button class="btn btn-outline-success" type="submit">Procurar</button>
-        </form>
+
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+          <li class="nav-item">
+            <a class="nav-link" href="#">Login</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/lemonSoft/cadastrar">Cadastrar</a>
+          </li>
+          <form class="d-flex">
+            <button class="btn btn-outline-dark" type="submit">
+              <i class="bi-cart-fill me-1"></i>
+              <img src="/logos/cart.svg" alt="">
+              <span class="badge bg-dark text-white ms-1 rounded-pill">0</span>
+            </button>
+          </form>
+        </ul>
+
       </div>
     </div>
   </nav>
 </body>
+
 </html>
